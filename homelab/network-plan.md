@@ -1,8 +1,7 @@
 # Homelab Network Plan
 Elite DevOps & Automation Engineer Program (2025–2026)
 
-Author: **Michel Zogbelemou**  
-Mentor: **ChatGPT — Elite DevOps Career Mentor**
+
 
 This document defines the full IP addressing plan, CIDR layout, gateway/DHCP configuration, and VM mapping for my DevOps homelab. It is the reference for all networking-related labs in Phase 0 and the base for later CI/CD, Kubernetes, and cloud work.
 

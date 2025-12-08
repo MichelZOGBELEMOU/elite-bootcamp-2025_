@@ -9,7 +9,7 @@ It serves as the foundation for all networking, virtualization, automation, CI/C
 
 ---
 
-# 🖥️ 1. Homelab Overview
+#  1. Homelab Overview
 
 My homelab is built to simulate a real-world hybrid environment with:
 
@@ -24,7 +24,7 @@ This architecture stays consistent across all phases of the roadmap.
 
 ---
 
-# 🧱 2. Physical Nodes
+#  2. Physical Nodes
 
 | Role | Hardware | OS | Purpose |
 |------|----------|----|---------|
@@ -34,7 +34,7 @@ This architecture stays consistent across all phases of the roadmap.
 
 ---
 
-# 🖧 3. Network Architecture (Dual-Router)
+#  3. Network Architecture (Dual-Router)
 
 The homelab uses a dual-router design to isolate lab traffic from home internet while allowing outbound access.
 
@@ -54,7 +54,7 @@ The homelab uses a dual-router design to isolate lab traffic from home internet 
 
 ---
 
-# 🔌 4. Proxmox Network Bridges
+#  4. Proxmox Network Bridges
 
 | Interface | Bridge | IP | Role |
 |-----------|--------|----|------|
@@ -63,7 +63,7 @@ The homelab uses a dual-router design to isolate lab traffic from home internet 
 
 ---
 
-# 🖥️ 5. Virtual Machines
+#  5. Virtual Machines
 
 ## **5.1 Application & CI/CD Servers**
 - Debian 12 / Fedora
@@ -100,7 +100,7 @@ Includes:
 
 ---
 
-# 🌐 6. Internal DNS & DHCP (dnsmasq)
+#  6. Internal DNS & DHCP (dnsmasq)
 
 The lab uses a private internal DNS domain:
 lab.local
@@ -125,7 +125,7 @@ Responsibilities of dnsmasq:
 
 ---
 
-# 📁 8. Repository Deliverables (Homelab Section)
+#  8. Repository Deliverables (Homelab Section)
 
 This folder contains:
 
@@ -143,7 +143,7 @@ homelab/
 
 ---
 
-# 🧩 9. Purpose of the Homelab
+#  9. Purpose of the Homelab
 This homelab enables all future training in:
 
 - Linux fundamentals  
@@ -159,6 +159,6 @@ This homelab enables all future training in:
 
 ---
 
-# 🏁 Final Notes
+#  Final Notes
 This homelab is intentionally designed to mirror real-world enterprise hybrid infrastructure.  
 It demonstrates production-level thinking in network segmentation, virtualization, automation, and system design — all essential skills for DevOps/SRE roles in 2026.

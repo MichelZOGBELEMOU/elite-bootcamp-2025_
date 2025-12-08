@@ -2,14 +2,15 @@
 
 **Author: Michel Zogbelemou**  
 **Mentor: ChatGPT — Elite DevOps Career Mentor**  
-Environment: Debian 12 Desktop · Proxmox VE 8 (R610) · Debian DNS VM · Fedora Test Node  
+Environment: Debian 12 Desktop · Proxmox VE 9 (R610) · Debian DNS VM · Fedora Test Node  
 Domain: `lab.local`  
 
 ---
 
 ## 1. Overview
 
-This document describes the SSH hardening applied across the full homelab architecture:
+This document defines the standardized SSH security baseline for all nodes in the Elite DevOps Homelab.  
+The configuration enforces key-only access, disables root login, and aligns with enterprise DevSecOps standards.
 
 - **Router A → Router B (double NAT)**  
 - **Proxmox R610 (10.10.0.2)**  
@@ -23,12 +24,14 @@ The goal is to secure all SSH endpoints, ensure key-based authentication, block 
 
 ## 2. Security Goals
 
-- Eliminate password-based authentication.
-- Disable direct root access on all nodes (`PermitRootLogin no`).
-- Enforce SSH key-only authentication.
-- Limit SSH exposure to internal networks only.
-- Use non-root administrative accounts (`michel + sudo`).
-- Hardening must be identical across Debian, Fedora, and Proxmox.
+
+- Enforce **SSH key-based authentication only**
+- Disable **password access** across all nodes
+- Disable **all remote root login** (SSH + GUI on Proxmox)
+- Standardize user access via `michel + sudo`
+- Harden Debian, Fedora, and Proxmox identically
+- Restrict SSH exposure to internal LAN subnets only
+- Ensure compatibility with Ansible automation and CI pipelines
 
 ---
 
@@ -37,7 +40,7 @@ The goal is to secure all SSH endpoints, ensure key-based authentication, block 
 ### 3.1 Generate keypair (Control Node)
 
 ```bash
-ssh-keygen -t ed25519 -C "michel@lab"
+ssh-keygen -t ed25519 -C "michel@lab.local"
 ```
 Generated files:
 
@@ -47,10 +50,10 @@ Generated files:
 
 Permissions:
 
-3.2 Distribute SSH keys
+### 3.2 Distribute SSH keys
 ```bash
 ssh-copy-id michel@r610.lab.local
-ssh-copy-id michel@dns01.lab.local
+ssh-copy-id michel@dns-01.lab.local
 ssh-copy-id michel@<any-new-node>
 ```
 All management happens from 10.10.0.10 (Control Node).
@@ -151,7 +154,7 @@ Realm: Proxmox VE authentication server
 
 Root via GUI is disabled permanently.
 
-## 7. DNS01 (Debian DNS Server)
+## 7. DNS-01 (Debian DNS Server)
 Follows same SSH hardening:
 
 ```bash

@@ -6,8 +6,17 @@ Mentor: **ChatGPT - Elite DevOps Career Mentor**
 This repository documents my complete 12 weeks Devops & Automation Engineer,executed fully on my personal homelab. It includes hands-on labs, network configuration, CI/CD pipelines, Kubernetes deployments, cloud automation, observability, SRE, and portfolio preparation.
 
 ---
+## Why This Project Exists
+Modern DevOps roles require ** hands-on skills**, not just theory.
+This project is my end-to-end journey to build a **real hybrid infrastructure from scratch**, following industry best practices and the Elite DevOps Roadmap.
 
-## 🚀 Program Overview
+ **Goal:**
+Become a job-ready DevOps/SRE engineer capable of managing real production infrastructure.
+
+---
+
+
+##  Program Overview
 This bootcamp follows the **Elite DevOps 2026 Roadmap (AI-Integrated Edition)**:
 
 1. **Phase 0 - Homelab & Networking Foundations**
@@ -31,12 +40,11 @@ ___
 | **Dell PowerEdge R610 — Proxmox VE 8** | Hypervisor | Hosts all VMs, vmbr0/vmbr1 networking |
 
 ### **Virtual Machines (Proxmox)**
-- Debian & Fedora servers (CI/CD agents, app servers)
+- Debian , RockyLinux, Fedora (Linux) servers (CI/CD agents, app servers)
 - PostgreSQL (Debian), MongoDB (Ubuntu), Redis (Alpine)
 - k3s Kubernetes: 1 master + 1 worker
-- Windows Server 2019/2022 (IIS + PowerShell)
+- Windows Server 2022 (IIS + PowerShell)
 - Monitoring Stack: Prometheus + Grafana + Loki
-- Windows 10 VM (on Debian Desktop)
 - Windows 11 VM (on Debian Desktop)
 
 ### **Network Architecture**
@@ -54,6 +62,7 @@ Internal DNS managed with **dnsmasq**.
 Internal domain: **lab.local**
 
 ---
+##  Weekly Phase Breakdown
 
 ### **Phase 0 — Homelab & Networking (Weeks 0–1)**
 - Install Proxmox 8  
@@ -111,10 +120,13 @@ Deliverables: `aws-tf-service/`, `observability-and-drills/`
 ---
 
 ### **Phase 4 — SRE · GitOps · Portfolio (Weeks 11–12)**
-- SLOs, error budgets, runbooks  
-- Argo CD, Kyverno, OpenTelemetry  
-- eBPF analysis  
-- CI-green portfolio assembly  
+- SLOs, error budgets  
+- Runbooks & incident response  
+- Argo CD GitOps  
+- Kyverno policies  
+- OpenTelemetry + eBPF  
+- HA PostgreSQL/Mongo/Redis  
+- Portfolio creation  
 
 Deliverables: `production-platform/`, `argo-gitops/`, `Portfolio_Summary.pdf`
 
@@ -131,39 +143,122 @@ Deliverables: `aiops-labs/`
 
 ## 📁 Repository Structure
 
+```text
+
 elite-bootcamp/
 │
+├── README.md                     # Project overview (root)
+│
 ├── homelab/
-├── network-plan.md
-├── dnsmasq.conf
-├── subnet-exercise.md
+│   ├── README.md
+│   ├── dnsmasq.conf
+│   ├── network-plan.md
+│   ├── proxmox-access.md
+│   ├── proxmox-setup-notes.md
+│   ├── ssh-hardening.md
+│   ├── subnet-exercises.md
+│   └── screenshots/
+│       ├── networking/
+│       ├── proxmox/
+│       ├── dns/
+│       └── ssh/
 │
 ├── linux-fundamentals-labs/
+│   ├── README.md
+│   └── screenshots/
+│
 ├── fedora-labs/
+│   ├── README.md
+│   └── screenshots/
+│
 ├── py-cli-tool/
+│   ├── README.md
+│   └── screenshots/
+│
 ├── yaml-labs/
+│   ├── README.md
+│   └── screenshots/
 │
 ├── py-sysinfo-service/
+│   ├── README.md
+│   └── screenshots/
+│
 ├── service-cicd/
+│   ├── README.md
+│   ├── docker/
+│   ├── jenkins/
+│   ├── github-actions/
+│   └── screenshots/
+│
 ├── db-labs/
+│   ├── postgres/
+│   ├── mongodb/
+│   ├── redis/
+│   └── screenshots/
+│
 ├── nosql-labs/
+│   ├── mongodb/
+│   ├── redis/
+│   └── screenshots/
+│
 ├── k8s-service-ops/
+│   ├── manifests/
+│   ├── deployments/
+│   ├── ingress/
+│   ├── tls/
+│   └── screenshots/
+│
 ├── helm-chart/
+│   ├── templates/
+│   ├── charts/
+│   └── screenshots/
 │
 ├── aws-tf-service/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── terraform.tfvars
+│   ├── cloud-diagrams/
+│   └── screenshots/
+│
 ├── observability-and-drills/
+│   ├── prometheus/
+│   ├── grafana/
+│   ├── loki/
+│   ├── alerting/
+│   └── screenshots/
 │
 ├── production-platform/
+│   ├── architecture/
+│   ├── manifests/
+│   └── screenshots/
+│
 ├── argo-gitops/
+│   ├── applications/
+│   ├── policies/
+│   ├── sources/
+│   └── screenshots/
+│
+├── docs/
+│   ├── diagrams/
+│   ├── screenshots/
+│   │   └── portfolio/
+│   ├── weekly-progress/
+│   ├── roadmap-v6.1.md
+│   └── homelab-architecture.md
 │
 └── Portfolio_Summary.pdf
 
+```
 ---
 
-## ✅ Success Criteria
-- Functional Proxmox lab (10.10.0.x)
-- SQL + NoSQL labs completed
-- End-to-end CI/CD and k3s deployment
-- AWS/Terraform automation
-- Observability dashboards + security scans
-- Portfolio ready for DevOps/SRE remote roles
+# ✅ Success Criteria  
+✔ Fully functional Proxmox homelab  
+✔ End-to-end CI/CD pipelines  
+✔ SQL + NoSQL labs completed  
+✔ Kubernetes (k3s) deployments working  
+✔ AWS Terraform automation  
+✔ Observability dashboards  
+✔ Security practices (Trivy, Cosign, RBAC)  
+✔ GitOps with Argo CD  
+✔ Final portfolio ready for remote DevOps/SRE roles 

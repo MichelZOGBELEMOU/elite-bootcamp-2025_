@@ -1,29 +1,45 @@
 # Proxmox Setup Notes (Concise & Recruiter-Friendly)
-This document summarizes how Proxmox VE 8 is configured on my Dell R610 to support the DevOps homelab.  
+This document summarizes how Proxmox VE 9 is configured on my Dell R610 to support the DevOps homelab.  
 It explains the network layout, bridges, VM connectivity, and storage in a clean and practical way.
 
 ---
 
 ## 1. Host Summary
 - **Server:** Dell PowerEdge R610  
-- **Hypervisor:** Proxmox VE 8  
+- **Hypervisor:** Proxmox VE 9  
 - **Specs:** Dual Xeon, 64 GB RAM  
 - **Disks:**  
   - 223 GB SSD (Proxmox + VM storage)  
-  - 500 GB HDD (planned)  
-- **Controller:** Dell PERC H700 (RAID0 for now)
+  - 500 GB HDD   
+- **Controller:** Dell PERC H700 (RAID0 )
 
 Sufficient for multi-VM DevOps labs (CI/CD, Docker, k3s, databases, monitoring).
 
 ---
 
 ## 2. Network Overview
-The homelab uses a dual-router model:
+The homelab uses a **segmented dual-router design** model:
 
 - **Router A (192.168.45.0/24)** → Internet  
 - **Router B (10.10.0.0/24)** → Internal lab network  
+```text
+               [ Internet ]
+                    │
+        ┌─────────────────────────┐
+        │   Router A (192.168.45.1)│
+        └───────┬─────────────────┘
+                │
+          Proxmox vmbr0 (eno1)
+                │
+        ┌─────────────────────────┐
+        │   Router B (10.10.0.1)   │
+        └───────┬─────────────────┘
+                │
+        Proxmox vmbr1 (eno2) → All VMs
+```
 
-Proxmox participates in both networks using two NICs.
+
+Proxmox participates in both networks using three NICs.
 
 ### NIC Mapping
 | NIC | Purpose | Connected To |
@@ -31,6 +47,8 @@ Proxmox participates in both networks using two NICs.
 | **eno1** | Internet access | Router A |
 | **eno2** | Lab LAN | Router B |
 | **mgmt0** | iDRAC | 10.10.0.34 |
+
+The iDRAC interface provides isolated out-of-band emergency access.
 
 ---
 
@@ -42,32 +60,34 @@ Proxmox uses Linux bridges like virtual switches.
 - Gets IP from Router A (DHCP)  
 - Used by Proxmox to reach the Internet  
 - **VMs do not use vmbr0**
-
+**Configuration**
+```bash
 iface vmbr0 inet dhcp
-
+```
 
 ### vmbr1 — Internal LAN (Main VM Network)
 - Uses NIC: **eno2**  
 - Static IP: **10.10.0.2/24**  
 - No gateway (important for routing)  
 - All VM communication happens here  
-
+**configuration**
+```bash
 iface vmbr1 inet static
-address 10.10.0.2/24
-
+    address 10.10.0.2/24
+```
 ---
 
 ## 4. Routing (How Everything Reaches the Internet)
-Proxmox itself goes:
-
+### Proxmox Host Routing Path
+```tex
 Proxmox → vmbr0 → Router A → Internet
-
-
-VMs go through **double NAT**:
-
+```
+### VM Routing Path (Double NAT):
+```text
 VM → Router B → Router A → Internet
 
 This setup is safe, isolated, and perfect for lab work.
+```
 
 ---
 
@@ -111,9 +131,7 @@ Proxmox provides two storage pools:
 
 - **local** → `/var/lib/vz` (ISO, templates, backups)  
 - **local-lvm** → LVM-thin pool for VM disks  
-
-Future:
-- Add 500 GB HDD for backups / secondary VM disks
+- 500 GB HDD for backups / secondary VM disks
 
 This covers all needs for the 12-week DevOps roadmap.
 

@@ -5,21 +5,27 @@
 
 ---
 
-## 🔐 1. Overview
-This document describes the hardened access model used for the **Dell PowerEdge R610 running Proxmox VE 8** inside the dual-router Elite DevOps Homelab.
+##  1. Overview
+This document defines the access control model, RBAC configuration, SSH hardening, and administrative policies applied to the **Dell PowerEdge R610 running Proxmox VE 9**.  
+It is the authoritative reference for hypervisor security throughout all phases of the Elite Bootcamp.
 
-Goals:
+ Purpose & Security Goals
 
-- Remove root-based web administration  
-- Enforce RBAC (Role-Based Access Control)  
-- Use SSH key authentication only  
-- Disable all remote root access (GUI and SSH)  
-- Harden the hypervisor inside a dual-NAT network  
-- Match DevOps/SRE production-grade security  
+- Eliminate root-based administration  
+- Enforce RBAC using named administrator accounts  
+- Require SSH key-only authentication  
+- Disable all remote root access (SSH + GUI)  
+- Harden Proxmox behind a dual-router boundary  
+- Provide secure break-glass access via iDRAC  
+- Mirror enterprise DevOps/SRE security standards 
 
 ---
 
 ## 👤 2. User & Authentication Model
+Proxmox supports two principal authentication realms:
+
+- **PVE** (internal)
+- **PAM** (Linux system accounts)
 
 ### 2.1 Proxmox GUI Users
 
@@ -29,12 +35,12 @@ Goals:
 | `root@pam` | Linux PAM | ❌ | GUI disabled for security |
 
 ### ✔ GUI Access  
-Only **michel@pve** can log into the Proxmox Web UI.  
-Root GUI access is intentionally disabled to enforce RBAC.
+Only `michel@pve` may log into the Proxmox Web UI.  
+Disabling `root@pam` prevents shared credentials and enhances auditability.
 
 ---
 
-## 🧩 3. RBAC Structure (Groups & Roles)
+##  3. RBAC Structure (Groups & Roles)
 
 ### 3.1 Group Created
 ```
@@ -49,18 +55,18 @@ sudo pveum aclmod / -group Admins -role Administrator
 ```
 
 ### 3.3 User → Group Mapping
-```
-michel@pve → Admins
+```bash
+sudo pveum usermod michel@pve -group Admins
 ```
 
 This gives `michel@pve` complete cluster administration without ever using the root GUI account.
 
 ---
 
-## 🔐 4. SSH Access Model  
+##  4. SSH Access Model  
 SSH access is performed from the **Debian 12 Desktop (10.10.0.10)**, which is the main Control Node in the lab.
 
-### 4.1 Allowed Authentication  
+### 4.1 Allowed Authentication Policy 
 SSH uses **key-only** authentication:
 
 ```
@@ -80,12 +86,12 @@ Meaning:
 - Root **cannot** SSH in any form  
 - No root password  
 - No root key login  
-- Root is accessible only locally on the console (or via iDRAC 10.10.0.34)
+- Root is accessible only locally on the console
 
 This is the strongest possible SSH hardening.
 
 ### 4.3 Authorized Keys  
-Only Michel can perform remote SSH administration:
+Only michel can perform remote SSH administration:
 
 ```
 /home/michel/.ssh/authorized_keys
@@ -97,7 +103,7 @@ Root does **NOT** have remote SSH access.
 
 ---
 
-## 🚫 5. Disabled Access
+##  5. Disabled Access
 
 | Access Type | Status | Reason |
 |-------------|--------|--------|
@@ -111,7 +117,7 @@ The hypervisor is isolated behind **two routers**, with no inbound exposure.
 
 ---
 
-## 🌐 6. Security Architecture Benefits
+##  6. Security Architecture Benefits
 This hardening aligns with the actual homelab design:
 
 - **Dual-router architecture** (ISP → Lab) isolates the hypervisor  
@@ -123,6 +129,53 @@ This hardening aligns with the actual homelab design:
 - **Root SSH completely disabled** for maximum security  
 - **Key-only SSH access** matches cloud provider security  
 - **iDRAC 10.10.0.34** acts as break-glass access  
+## 7. 🧪 Monthly Security Audit Checklist
+### 7.1 User & RBAC Validation
+```bash
+pveum user list
+pveum group list
+pveum acl list
+```
+### 7.2 SSH Hardening Validation
+```bash
+grep -E "PermitRootLogin|PasswordAuthentication" /etc/ssh/sshd_config
+```
+### 7.3 Network Boundary Validation
+
+- Confirm Proxmox unreachable from WAN
+- Validate dual NAT still enforced
+- Confirm iDRAC remains isolated on 10.10.0.34
+### 7.4 Log Review
+```bash
+journalctl -u ssh
+journalctl -u pvedaemon
+journalctl -u pveproxy
+```
+### 7.5 Key Review
+
+- Remove unused keys
+- Confirm root has zero SSH keys
+
+## 8. 🖥️ Emergency / Break-Glass Procedure
+
+If Proxmox GUI or SSH becomes inaccessible:
+
+> Open iDRAC at 10.10.0.34
+> Launch remote console
+> Repair networking or SSH configuration
+> Validate RBAC/SSH policies remain intact
+> Document the incident in observability-and-drills/
+
+
+ Summary
+
+- This hardened access model delivers:
+- Zero-trust security
+- Full RBAC control
+- No remote root exposure
+- Key-only authentication
+- Strong network segmentation
+- Cloud-aligned best practices
 
 This configuration mirrors real-world SRE/DevOps production clusters.
 
