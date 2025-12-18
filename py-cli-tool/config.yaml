@@ -1,0 +1,43 @@
+environment:
+  mane: homelab
+  domain: lab.local
+  description: >
+    Internal DevOps homelab environment used for automation, CI/CD, and infrastructure testing.
+
+network:
+  internal_lan:
+    cidr: 10.10.0.1
+    gateway: 10.10.0.1
+    dns_server: 10.10.0.20
+  external_nat:
+    cidr: 192.168.45.0/24
+    gateway: 192.168.45.1
+hosts:
+  debian_control_node:
+    hostname: zobdebian.lab.local
+    role: control
+    os: debian-12
+    ip_addresses:
+      - 10.10.0.10
+    users:
+      root:
+        description: Administraation account (SSH root login disabled)
+      michel:
+        description: >
+          Primary sudo user.
+          All adminstrative tasks are executed through this account.
+
+  proxmox_hypervisor:
+    hostname: r610.lab.local
+    role: hyperbisor
+    os: proxmox-ve
+    ip_addresses:
+      - 10.10.0.2
+      - 192.168.45.50
+    users:
+      root:
+        description: Proxmox administrative account
+      michel:
+        description: >
+          administrative user for Proxmox management
+          and API-based automation
