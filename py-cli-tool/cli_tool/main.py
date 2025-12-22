@@ -1,16 +1,27 @@
 """CLI tool entry point"""
 
 from pathlib import Path
+import logging
 import sys
 import argparse
 import yaml
 from cli_tool.logging_config import get_logger
 import cli_tool.load_save as ls
 
+# Configurations
+LOG_DIR = Path.home() / Path("py-cli-tool")
+LOG_FILE = LOG_DIR / "clitool.log"
+FORMATER = logging.Formatter(
+    "[%(asctime)s]: %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+)
+CONFIG_FILE = Path("config.yaml")
+
 
 def main() -> None:
     """Main entry point for CLI tool"""
-    CONFIG_FILE = Path("config.yaml")
+
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+
     parser = argparse.ArgumentParser(description="Devops Homelab cli tool")
 
     subparsers = parser.add_subparsers(
@@ -30,6 +41,11 @@ def main() -> None:
 
     # Initiate logger
     logger = get_logger(logging_level)
+    handler = logging.FileHandler(LOG_FILE)
+    handler.setLevel(logging_level)
+    handler.setFormatter(FORMATER)
+    if not logger.handlers:
+        logger.addHandler(handler)
 
     try:
         config_data = ls.load_yaml(CONFIG_FILE, logger)

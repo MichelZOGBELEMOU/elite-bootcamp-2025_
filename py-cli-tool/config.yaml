@@ -13,7 +13,7 @@ network:
     cidr: 192.168.45.0/24
     gateway: 192.168.45.1
 hosts:
-  debian_control_node:
+  - debian_control_node:
     hostname: zobdebian.lab.local
     role: control
     os: debian-12
@@ -27,7 +27,7 @@ hosts:
           Primary sudo user.
           All adminstrative tasks are executed through this account.
 
-  proxmox_hypervisor:
+  - proxmox_hypervisor:
     hostname: r610.lab.local
     role: hyperbisor
     os: proxmox-ve
