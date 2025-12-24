@@ -1,43 +1,136 @@
 environment:
-  mane: homelab
+  name: homelab
   domain: lab.local
-  description: >
-    Internal DevOps homelab environment used for automation, CI/CD, and infrastructure testing.
+  description: Internal DevOps homelab for automation, CI/CD, and platform labs.
 
-network:
-  internal_lan:
-    cidr: 10.10.0.1
+defaults:
+  vm:
+    os_family: debian
+    os_version: "12"
+    ping: true
+    ssh_port: 22
+    uptime_check: false
+
+networks:
+  lab_lan:
+    cidr: 10.10.0.0/24
     gateway: 10.10.0.1
-    dns_server: 10.10.0.20
-  external_nat:
+    bridge: vmbr1
+    dns_servers:
+      - 10.10.0.20
+    expected_hosts:
+      proxmox: 10.10.0.2
+      control: 10.10.0.10
+      dns-01: 10.10.0.20
+  home_wan:
     cidr: 192.168.45.0/24
     gateway: 192.168.45.1
-hosts:
-  - debian_control_node:
-    hostname: zobdebian.lab.local
-    role: control
-    os: debian-12
-    ip_addresses:
-      - 10.10.0.10
-    users:
-      root:
-        description: Administraation account (SSH root login disabled)
-      michel:
-        description: >
-          Primary sudo user.
-          All adminstrative tasks are executed through this account.
+    bridge: vmbr0
+    expected_hosts:
+      router_a: 192.168.45.1
 
-  - proxmox_hypervisor:
+vms:
+  - name: proxmox_hypervisor
     hostname: r610.lab.local
-    role: hyperbisor
-    os: proxmox-ve
-    ip_addresses:
-      - 10.10.0.2
-      - 192.168.45.50
-    users:
-      root:
-        description: Proxmox administrative account
-      michel:
-        description: >
-          administrative user for Proxmox management
-          and API-based automation
+    role: hypervisor
+    machine_type: bare-metal
+    os:
+      family: proxmox-ve
+      version: "9"
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.2
+      - name: home_wan
+        ip: 192.168.45.50
+    checks:
+      ping: true
+      ssh_port: 22
+      uptime_check: false
+
+  - name: zob-ubuntu
+    hostname: zob-ubuntu.lab.local
+    role: control
+    machine_type: bare-metal
+    os:
+      family: ubuntu
+      version: "25.04"
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.10
+    checks:
+      ping: true
+      ssh_port: 22
+
+  - name: dns-01
+    hostname: dns-01.lab.local
+    role: dns_dhcp
+    os:
+      family: debian
+      version: "12"
+    machine_type: vm
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.20
+    checks:
+      ping: true
+      ssh_port: 22
+
+  - name: k3s_master01
+    hostname: k3s-master01.lab.local
+    role: k3s_server
+    os:
+      family: debian
+      version: "12"
+    machine_type: vm
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.40
+    checks:
+      ping: true
+      ssh_port: 22
+      uptime_check: true
+
+  - name: fedora-vm
+    hostname: fedora-vm.lab.local
+    role: lab_machine
+    os:
+      family: fedora
+      version: "46"
+    machine_type: vm
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.56
+    checks:
+      ping: true
+      ssh_port: 22
+
+
+  - name: ubuntu
+    hostname: ubuntu.lab.local
+    role: lab_machine
+    os:
+      family: ubuntu
+      version: "25.04"
+    machine_type: vm
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.54
+    checks:
+      ping: true
+      ssh_port: 22
+
+  - name: debian
+    hostname: debian.lab.local
+    role: lab_machine
+    os:
+      family: debian
+      version: "13"
+    machine_type: vm
+    networks:
+      - name: lab_lan
+        ip: 10.10.0.62
+    checks:
+      ping: true
+      ssh_port: 22
+
+
